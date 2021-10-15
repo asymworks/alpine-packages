@@ -1,0 +1,35 @@
+#!/sbin/openrc-run
+
+description='Signal the UPS to kill power in a power failure condition'
+
+depend()
+{
+	after mount-ro
+	keyword -jail -lxc -openvz -prefix -uml -vserver -xenu -timeout
+}
+
+start() {
+	local UPS_CTL UPS_POWERDOWN
+
+	if [ -f /etc/killpower -o -f /etc/nut/killpower ]; then
+		UPS_CTL=/usr/sbin/upsdrvctl
+		UPS_POWERDOWN="${UPS_CTL} -u root shutdown"
+	else
+		ewarn "UPS powerfail script scheduled, but no poweroff commands found."
+		return 0
+	fi
+
+	if [ -f "${UPS_CTL}" -a -x "${UPS_CTL}" ]; then
+		ebegin 'Signaling UPS to kill power'
+		${UPS_POWERDOWN}
+		eend $?
+
+		ebegin 'Halt system and wait for the UPS to kill our power'
+		/sbin/halt 
+		# If the sleep gets hit, something is wrong...
+		# do NOT restart the system.
+		while [ 1 ]; do sleep 60; done
+	else
+		ewarn "UPS powerfail script scheduled, and flags found, but ${UPS_CTL} missing."
+	fi
+}

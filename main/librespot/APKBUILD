@@ -1,0 +1,44 @@
+#
+# SPDX-License-Identifier: MIT
+# librespot (c) 2015 Paul Lietar
+# https://github.com/librespot-org/librespot
+#
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+#
+pkgname=librespot
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Open Source Spotify client library"
+url="https://github.com/librespot-org/librespot"
+arch="all"
+license="MIT"
+depends="alsa-lib"
+makedepends="rust cargo alsa-lib-dev"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/librespot-org/librespot/archive/v$pkgver.tar.gz
+	librespot.initd
+	librespot.confd
+"
+builddir="$srcdir/$pkgname-$pkgver"
+options="!check net"
+#no test suite
+subpackages="$pkgname-openrc"
+
+build() {
+	cd "$builddir" || exit 1
+	cargo build --release --no-default-features --features alsa-backend -v
+}
+
+package() {
+	cd "$builddir/target/release" || exit 1
+	install -m755 -D "$builddir"/target/release/librespot \
+		"$pkgdir"/usr/bin/librespot
+	install -m755 -D "$srcdir"/$pkgname.initd \
+		"$pkgdir"/etc/init.d/$pkgname
+	install -m644 -D "$srcdir"/$pkgname.confd \
+		"$pkgdir"/etc/conf.d/$pkgname
+}
+
+sha512sums="286c2ce0d0b6e52f06cbb82ca027dafe2fbdfd4c805f2a770715d029991ba872b73800052800521825c675c93c4ae589e3ffb6c0cf051a27c4711f828a324ea3  librespot-0.2.0.tar.gz
+6060b09a6c1ea09896e3ec20b96a5d1e8811e7d4cfa9a9ce910a54f63bfacfb79696634b46de4a3be8b6a30e58b449e35e3bda22ca823bc73f596e3eb7aecb14  librespot.initd
+a62ecbc890abe296decd3ea9e19c30fb6b8687a47447e787904f2e9ee2643b6b3795a75d2ac9192219cff19c95461a4baf363397ea564cea3144cd9fe70000f7  librespot.confd"

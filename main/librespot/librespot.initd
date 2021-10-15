@@ -1,0 +1,11 @@
+#!/sbin/openrc-run
+
+name=librespot
+command="/usr/bin/$name"
+command_args="-n '$NAME' --device-type $DEVICE_TYPE $AUDIO_OPTS $OPTS"
+command_background="yes"
+pidfile="/run/$name.pid"
+
+start_pre() {
+    checkpath --directory --mode 0755 /var/cache/librespot
+}

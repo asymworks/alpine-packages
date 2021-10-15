@@ -1,0 +1,13 @@
+# conf.d file for librespot Spotify Client
+
+# Player Name and Device Type (Required)
+# See https://github.com/librespot-org/librespot/wiki/Options for the list of
+# supported Device Types
+NAME="Librespot"
+DEVICE_TYPE="speaker"
+
+# Audio Options
+AUDIO_OPTS=""
+
+# Extra Options
+OPTS="--bitrate 160 --cache /var/cache/librespot"

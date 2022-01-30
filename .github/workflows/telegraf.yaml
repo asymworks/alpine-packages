@@ -1,8 +1,8 @@
 name: telegraf
 on:
   push:
-  paths:
-    - "main/telegraf/**"
+    paths:
+      - "main/telegraf/**"
   workflow_dispatch:
 
 jobs:

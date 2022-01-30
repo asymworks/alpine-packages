@@ -40,9 +40,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: docker://asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
-          options: -e RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY} -v ${{ github.workspace }}:/home/abuilder/main/package -v ~/packages:/packages
-        env:
-          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+          options: -e RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }} -v ${{ github.workspace }}:/home/abuilder/main/package -v ~/packages:/packages
 
       - name: Publish Repository Packages
         run: rsync -avz ~/packages "${{ secrets.PKG_SSH_USER }}@${{ secrets.PKG_SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_arch }}/main"

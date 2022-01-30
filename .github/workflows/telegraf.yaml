@@ -1,0 +1,43 @@
+name: telegraf
+on:
+  push:
+  paths:
+    - "main/telegraf/**"
+  workflow_dispatch:
+
+jobs:
+  telegraf:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        alpine_version: [v3.12, v3.13, v3.14, v3.15, edge]
+        alpine_arch: [x86_64, armhf, aarch64, armv7]
+
+    steps:
+      - name: Cache Go Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            main/telegraf/cache
+          key: ${{ matrix.alpine_arch }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ matrix.alpine_arch }}-go-
+
+      - name: Configure Known Hosts File
+        run: echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: Install Deploy SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PKG_SSH_PRIVATE_KEY }}
+
+      - name: Synchronize Repository Packages
+        run: rsync -avz "${{ secrets.PKG_SSH_USER }}@${{ secrets.PKG_SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_arch }}/main" ~/packages
+
+      - name: Build Package
+        env:
+          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+        run: docker run -ti --rm -e RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY} -v ${PWD}:/home/abuilder/main/package -v ~/packages:/packages asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
+
+      - name: Publish Repository Packages
+        run: rsync -avz ~/packages "${{ secrets.PKG_SSH_USER }}@${{ secrets.PKG_SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_arch }}/main"

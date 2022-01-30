@@ -16,6 +16,8 @@ jobs:
         alpine_arch: [armv7]
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Cache Go Dependencies
         uses: actions/cache@v2
         with:
@@ -35,9 +37,12 @@ jobs:
         run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ~/packages
 
       - name: Build Package
+        uses: addnab/docker-run-action@v3
+        with:
+          image: docker://asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
+          options: "-e RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY} -v ${{ github.workspace }}:/home/abuilder/main/package -v ~/packages:/packages"
         env:
           RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
-        run: docker run --rm -e RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY} -v ${PWD}:/home/abuilder/main/package -v ~/packages:/packages asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
 
       - name: Publish Repository Packages
         run: rsync -avz ~/packages "${{ secrets.PKG_SSH_USER }}@${{ secrets.PKG_SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_arch }}/main"

@@ -40,7 +40,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: docker://asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
-          options: "-e RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY} -v ${{ github.workspace }}:/home/abuilder/main/package -v ~/packages:/packages"
+          options: -e RSA_PRIVATE_KEY=${RSA_PRIVATE_KEY} -v ${{ github.workspace }}:/home/abuilder/main/package -v ~/packages:/packages
         env:
           RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
 

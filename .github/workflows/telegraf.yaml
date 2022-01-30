@@ -26,13 +26,13 @@ jobs:
       - name: Install Deploy SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.PKG_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Configure Known Hosts File
         run: echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
       - name: Synchronize Repository Packages
-        run: rsync -avz "${{ secrets.PKG_SSH_USER }}@${{ secrets.PKG_SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_arch }}/main" ~/packages
+        run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_arch }}/main" ~/packages
 
       - name: Build Package
         env:

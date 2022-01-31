@@ -3,7 +3,7 @@
 # Contributor: Jonathan Krauss <jkrauss@asymworks.com>
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
 pkgname=telegraf
-pkgver=1.20.4
+pkgver=1.21.3
 pkgrel=0
 _commit=6a94f65a # git rev-parse --short HEAD
 _branch=release-${pkgver%.*}
@@ -49,7 +49,7 @@ package() {
 }
 
 sha512sums="
-bc301cd82a317f80dff4212c2a2b01a585fd074ad3a7c51535c0e3d0a3b151cbac09e2c2e2ebf56ebe02492e38e27b4778365dd79bd2c4d8f0de69c0e82b8526  telegraf-1.20.4.tar.gz
+a558267bdb32f547e55df5abe91dc6e6ed240460c126f5fbfa07e09d4f13f31b89e3783ddee6224ee94c5204d76eca3a3cf795f7e5c326c67cd57956496a3a05  telegraf-1.21.3.tar.gz
 684aa75093cb957c6728a38f5137078ce6e8dae78a0472e5c470cce3d1bdf3c05fc93d6550e077d6799878798428b64f607e9db268424a73d24e0cad9e8fe71a  tests-internal-rotate-slow-for-docker.patch
 e30778871c6a4d6682c5c5e1bf83ac93ca9be169dbb132e1111436e3a555516d491bdab44ac7a57db24b6aad3f8d50bdaab6dca89e9bbded29c63cd3a49fc729  tests-internal-slow-for-docker.patch
 effd94e968cd55e22493a7a7264b3970afc4139ddd4d9ffea7943612cf0cb93fec39a440c561957c165d788f6b184c246a044555d5c75dcf4b8564af45a72330  tests-plugins-reverse-dns-ignore-result.patch

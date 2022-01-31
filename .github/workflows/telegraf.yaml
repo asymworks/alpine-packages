@@ -45,4 +45,4 @@ jobs:
         run: docker run --rm -e "RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}" -v "${{ github.workspace }}/main/telegraf:/home/builder/main/package" -v "${HOME}/packages:/packages" asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
 
       - name: Publish Repository Packages
-        run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/{{ matrix.alpine_arch }}/"
+        run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"

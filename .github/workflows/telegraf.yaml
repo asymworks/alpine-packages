@@ -13,7 +13,7 @@ jobs:
         #alpine_version: [v3.12, v3.13, v3.14, v3.15, edge]
         #alpine_arch: [x86_64, armhf, aarch64, armv7]
         alpine_version: [v3.15]
-        alpine_arch: [x86_64]
+        alpine_arch: [armv7]
 
     steps:
       - uses: actions/checkout@v2

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        alpine_version: [v3.13, v3.14, v3.15, edge]
+        alpine_version: [v3.13, v3.14, v3.15]
         alpine_arch: [x86_64, armhf, aarch64, armv7]
 
     steps:

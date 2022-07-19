@@ -18,6 +18,7 @@ source="
     $pkgname-$pkgver.tar.gz::https://github.com/mpromonet/v4l2rtspserver/archive/refs/tags/v$pkgver.tar.gz
     hls.js.zip::https://github.com/video-dev/hls.js/archive/e90a1b999071e88af0f734ef18b9e8520c839cec.zip
     libv4l2cpp.zip::https://github.com/mpromonet/libv4l2cpp/archive/21d4d0beac3296d044f96d300614a7505dba2280.zip
+    build-without-git.patch
     v4l2rtspserver.confd
     v4l2rtspserver.initd
 "
@@ -27,21 +28,20 @@ options="!check net"
 subpackages="$pkgname-openrc"
 
 unpack() {
-    mkdir -p "$srcdir"
-    msg "Unpacking $startdir/$pkgname-$pkgver.tar.gz..."
-    tar -C "$srcdir" -xzf "$startdir/$pkgname-$pkgver.tar.gz"
+    msg "Unpacking $srcdir/$pkgname-$pkgver.tar.gz..."
+    tar -C "$srcdir" -xzf "$srcdir/$pkgname-$pkgver.tar.gz"
 
     # Unpack pinned submodules hls.js and libv4l2cpp
     tmp1=`mktemp -d`
     msg "Unpacking submodule hls.js"
-    unzip -d "$tmp1" "$startdir/hls.js.zip"
-    mv "$tmp1"/*/* "$srcdir/hls.js/"
+    unzip -d "$tmp1" "$srcdir/hls.js.zip"
+    mv "$tmp1"/*/* "$builddir/hls.js/"
     rm -rf "$tmp1"
 
     tmp2=`mktemp -d`
     msg "Unpacking submodule libv4l2cpp"
-    unzip -d "$tmp2" "$startdir/libv4l2cpp.zip"
-    mv "$tmp2"/*/* "$srcdir/v4l2wrapper/"
+    unzip -d "$tmp2" "$srcdir/libv4l2cpp.zip"
+    mv "$tmp2"/*/* "$builddir/v4l2wrapper/"
     rm -rf "$tmp2"
 }
 
@@ -63,6 +63,7 @@ sha512sums="
 1ce4dc1fb6fd7cf5226674d7c22872c82591ee65f3d8d6ffff69ce06dce8e59263a00cce8db204fc1d70c9df7ceeeba076e220a8af74b75e14eed80ab80f348d  v4l2rtspserver-0.3.3.tar.gz
 f7d54fc9cb5b35e67bbf78899bfe4add24cde94aa156ffc3fb19ef76b211c17183f7d2c63c324911a9ae4d1178a1dffdd51a12b4de3ce3b3e6c4d7dc7b35b8b2  hls.js.zip
 f8a09b9cb32ed9ada5baf1a6a6e9ffdefd015ff14e1670f634a6f20d858baa07e922ad34d75e55e30183d17b3656095dc73cb203e9e608c3195b9c1aaf3679a3  libv4l2cpp.zip
+bcda0790d12bbad807a057c157d9376cc8388bb09c08237976105838b13068e3c39b12a0ffc25b82f92ec92367d8f6319f609115543aab7dc6b1e2a11f1ccb05  build-without-git.patch
 5e70bbcdf3f5e20ebf7d62eefd463c308fec826f551d81ea98ba010c9d8e7b0af40768e519c94ba9c5d3a01330aaa24c937260ff73cf254a89783f4659ff41d9  v4l2rtspserver.confd
 1b7e1a0ec76d38e98397ad6fea3d28cd19e542b13d02cd294a8deb5b9de0b892af5bc5b16a203a298414e3aa9cf79562c71c68e799bf91ba327a24c549f59917  v4l2rtspserver.initd
 "

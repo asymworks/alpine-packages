@@ -1,0 +1,8 @@
+# conf.d file for V4L2 RTSP Stream Server
+
+# Video Devices (defaults to /dev/video0)
+DEVICES=""
+
+# RTSP Server Options
+# See https://github.com/mpromonet/v4l2rtspserver for a full list
+RTSP_OPTS=""

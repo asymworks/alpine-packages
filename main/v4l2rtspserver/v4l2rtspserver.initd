@@ -1,0 +1,7 @@
+#!/sbin/openrc-run
+
+name=v4l2rtspserver
+command="/usr/bin/$name"
+command_args="$RTSP_OPTS $DEVICES"
+command_background="yes"
+pidfile="/run/$name.pid"

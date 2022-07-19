@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  telegraf:
+  v4l2rtspserver:
     runs-on: ubuntu-latest
     strategy:
       matrix:

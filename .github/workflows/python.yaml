@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  telegraf:
+  python3:
     runs-on: ubuntu-latest
     strategy:
       matrix:

@@ -1,0 +1,32 @@
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+pkgname=py3-digitalocean
+pkgver=1.17.0
+pkgrel=0
+pkgdesc="Python module to manage Digital Ocean droplets"
+url="https://github.com/koalalorenzo/python-digitalocean"
+arch="noarch"
+license="LGPL-3.0"
+# Requirements for tests are not available in main
+options="!check"
+depends="
+	py3-jsonpickle
+	py3-requests
+	python3
+	"
+makedepends="py3-setuptools"
+source="$pkgname-$pkgver.tar.gz::https://github.com/jsonpickle/jsonpickle/archive/$pkgver.tar.gz"
+builddir="$srcdir/digitalocean-$pkgver"
+
+build() {
+	python3 setup.py build
+}
+
+package() {
+	python3 setup.py install --prefix=/usr --root="$pkgdir"
+}
+
+sha512sums="
+c123ec07171c2c7c34e4173b97750adfa313b4312d91c0d58e4eb8750361604017e5b370c23ec886d2cbf704f9074ec5ad0fa9c2cd8e6f9521532adafff39d41  requests-2.28.1.tar.gz
+188675a3d35b9e8c0bee52bd699e0b9034c8fd8c699c0677c891ae1258008c0ed5cefa544457b36ce44640c6b6edde11fa7b35974c66355bb3ec51eb34b059f1  charset-normaliser-3.patch
+"

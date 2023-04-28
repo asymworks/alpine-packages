@@ -9,8 +9,8 @@ url="https://github.com/jsonpickle/jsonpickle"
 arch="noarch"
 license="BSD-3-Clause"
 depends="python3"
-makedepends="py3-setuptools"
-source="$pkgname-$pkgver.tar.gz::https://github.com/jsonpickle/jsonpickle/archive/$pkgver.tar.gz"
+makedepends="py3-pip py3-setuptools"
+source="$pkgname-$pkgver.tar.gz::https://files.pythonhosted.org/packages/2b/3f/dd9bc9c1c9e57c687e8ebc4723e76c48980004244cf8db908a7b2543bd53/jsonpickle-$pkgver.tar.gz"
 builddir="$srcdir/$_pkgname-$pkgver"
 options="!check" # needs py3-tornado from community
 
@@ -23,5 +23,5 @@ package() {
 }
 
 sha512sums="
-71b4b14782d336a3fc187bb82197be02f06acfca06569e4ae2b73edb64cde2f30fded65eb36a9cbac6172e7c90a49f6d2283c6b9cb27f215e111ae49cf41850f  py3-urllib3-1.26.12.tar.gz
+88634acb751a0bac2c9d2ca9872dd92aeab3245ec7c1b0dced0272dc9104923b2143898fd3f7f2666bd2b220ab2396e0b2f065853256b5995695ca56534a5ea5  py3-jsonpickle-3.0.1.tar.gz
 "

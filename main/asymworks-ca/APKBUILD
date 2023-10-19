@@ -2,7 +2,7 @@
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
 pkgname=asymworks-ca
 pkgver=1.0.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Asymworks Certification Authority Root Certificates"
 url="https://pki.asymworks.net"
 arch="noarch"

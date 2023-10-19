@@ -2,7 +2,7 @@
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
 pkgname=asymworks-ca
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Asymworks Certification Authority Root Certificates"
 url="https://pki.asymworks.net"
 arch="noarch"
@@ -17,9 +17,9 @@ source="root-ca.crt
     "
 
 package() {
-    install -Dm0644 "$srcdir/root-ca.crt" "$pkgdir/etc/ssl/certs/Asymworks_Root_CA.crt"
-	install -Dm0644 "$srcdir/identity-ca.crt" "$pkgdir/etc/ssl/certs/Asymworks_Identity_CA.crt"
-    install -Dm0644 "$srcdir/network-ca.crt" "$pkgdir/etc/ssl/certs/Asymworks_Network_CA.crt"
+    install -Dm0644 "$srcdir/root-ca.crt" "$pkgdir/usr/share/ca-certificates/asymworks/Asymworks_Root_CA.crt"
+	install -Dm0644 "$srcdir/identity-ca.crt" "$pkgdir/usr/share/ca-certificates/asymworks/Asymworks_Identity_CA.crt"
+    install -Dm0644 "$srcdir/network-ca.crt" "$pkgdir/usr/share/ca-certificates/asymworks/Asymworks_Network_CA.crt"
 }
 
 sha512sums="f60a0b46b866ca00418ff5a46e70eed33328ff462959e250fb7c25bfa0af8ba93c0bbe716eb6d1f632118ab393def7077192bf0ee35f46388a645b0683aa10cc  root-ca.crt

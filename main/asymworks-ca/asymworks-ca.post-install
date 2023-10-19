@@ -1,2 +1,4 @@
 #!/bin/sh
+mkdir -p /usr/local/share/ca-certificates/asymworks
+find /usr/share/ca-certificates/asymworks --exec ln -s {} /usr/local/share/ca-certificates/asymworks/ \;
 /usr/sbin/update-ca-certificates

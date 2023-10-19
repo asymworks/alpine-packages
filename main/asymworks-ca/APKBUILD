@@ -2,7 +2,7 @@
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
 pkgname=asymworks-ca
 pkgver=1.0.0
-pkgrel=4
+pkgrel=5
 pkgdesc="Asymworks Certification Authority Root Certificates"
 url="https://pki.asymworks.net"
 arch="noarch"
@@ -10,7 +10,7 @@ license="MIT"
 depends="ca-certificates"
 # Requirements for tests are not available in main
 options="!check"
-install="asymworks-ca.post-install"
+install="asymworks-ca.post-install asymworks-ca.pre-deinstall"
 source="root-ca.crt
     identity-ca.crt
     network-ca.crt

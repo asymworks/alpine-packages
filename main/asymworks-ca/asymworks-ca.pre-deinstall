@@ -1,0 +1,3 @@
+#!/bin/sh
+find /usr/local/share/ca-certificates -iname 'Asymworks_*' -exec rm {} \;
+/usr/sbin/update-ca-certificates

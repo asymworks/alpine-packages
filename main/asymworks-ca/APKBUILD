@@ -1,0 +1,26 @@
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+pkgname=asymworks-ca
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Asymworks Certification Authority Root Certificates"
+url="https://pki.asymworks.net"
+arch="noarch"
+license="MIT"
+# Requirements for tests are not available in main
+options="!check"
+install="asymworks-ca.post-install"
+source="root-ca.crt
+    identity-ca.crt
+    network-ca.crt
+    "
+
+package() {
+    install -Dm0644 "$srcdir/root-ca.crt" "$pkgdir/etc/ssl/certs/Asymworks_Root_CA.crt"
+	install -Dm0644 "$srcdir/identity-ca.crt" "$pkgdir/etc/ssl/certs/Asymworks_Identity_CA.crt"
+    install -Dm0644 "$srcdir/network-ca.crt" "$pkgdir/etc/ssl/certs/Asymworks_Network_CA.crt"
+}
+
+sha512sums="f60a0b46b866ca00418ff5a46e70eed33328ff462959e250fb7c25bfa0af8ba93c0bbe716eb6d1f632118ab393def7077192bf0ee35f46388a645b0683aa10cc  root-ca.crt
+24cbe719072fc7a4b901f472b9734d248e582d7e483e30f49c37050b9c78cd9ba54ce1fefba63c36dfb40a9cd9185bf78dcae678187802c553796d05b32f910d  identity-ca.crt
+152781cbfe556f4fc1c6ba7a2f9e3c1b46d850559533520b76fa3589c557f7ca9e194ddbf1141f714787cba99734d81608f1374965acbbf34845f35f218a5081  network-ca.crt"

@@ -46,7 +46,7 @@ package() {
 	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
 	install -Dm644 "$srcdir/$pkgname.confd" "$pkgdir/etc/conf.d/$pkgname"
 	install -Dm755 "$builddir/$pkgname" "$pkgdir/usr/bin/$pkgname"
-	install -Dm644 "$builddir/etc/$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
+	install -Dm644 "$builddir/$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
 	install -dm755 "$pkgdir/etc/$pkgname.conf.d"
 }
 

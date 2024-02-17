@@ -18,6 +18,7 @@ subpackages="$pkgname-openrc"
 options="net"
 source="telegraf-$pkgver.tar.gz::https://github.com/influxdata/telegraf/archive/v$pkgver.tar.gz
 	tests-plugins-reverse-dns-ignore-result.patch
+	tests-plugins-cloud_pubsub_push-ignore-result.patch
 	telegraf.initd
 	telegraf.confd
 	"
@@ -53,6 +54,7 @@ package() {
 sha512sums="
 c60a466e33674b728da351e71310e87e19c3a3bf3283d48eda0be0de62daf62ea43f4148562899a3cf631f8bd1463b7915c231870fa2d0a179072db229ec71ab  telegraf-1.28.5.tar.gz
 a176dbaf580dc930a8b326d393083ed8e31bb0c1d8ee4d407aebb3c3af906e11652189e5557d4b99faaf44f27ed58b29192cac73ae328a41e582857cb915fa68  tests-plugins-reverse-dns-ignore-result.patch
+0668aa211cd71f08d42197ba7956d471acd5e894b8c3262cfabf12f5f2500ad276ccbca09216cc4287ee576641be58d255307af567ba90184724022d58bb24df  tests-plugins-cloud_pubsub_push-ignore-result.patch
 abe483deb8e12fe140de2c36d17bbfbc97ed7a5de8c3d76162357f7ba6575b8236b7197b92a26ed6d54f95c1ccbfc12ca62d6cc0371bf49d10a1ea5622a51ed1  telegraf.initd
 d1a9aa57f8b5179f2d8396518b9db757fe1c40337b515c1f750cf577683ff15f3174bc757afa70d880a1fef809c873e6aa0da1b903a5a97934c14965712d47a4  telegraf.confd
 "

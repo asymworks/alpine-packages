@@ -1,5 +1,5 @@
---- a/plugins/inputs/cloud_pubsub_push/pubsub_push_test.go	2022-05-16 07:28:38.000000000 -0700
-+++ b/plugins/inputs/cloud_pubsub_push/pubsub_push_test.go	2022-06-30 11:05:04.000000000 -0700
+--- a/plugins/inputs/cloud_pubsub_push/cloud_pubsub_push_test.go	2022-05-16 07:28:38.000000000 -0700
++++ b/plugins/inputs/cloud_pubsub_push/cloud_pubsub_push_test.go	2022-06-30 11:05:04.000000000 -0700
 @@ -204,12 +204,14 @@
  		req = req.WithContext(ctx)
  

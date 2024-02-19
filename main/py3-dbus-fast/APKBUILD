@@ -14,8 +14,9 @@ source="$pkgname-$pkgver.tar.gz::https://github.com/Bluetooth-Devices/dbus-fast/
 builddir="$srcdir/$_pkgname-$pkgver"
 options="!check"  # Not quite set up properly for CI/CD
 
-build() {
-}
+# Nothing to build - pip3 will build the wheel in the "package" phase
+# build() {
+# }
 
 package() {
 	pip3 install --prefix=/usr --root="$pkgdir" .

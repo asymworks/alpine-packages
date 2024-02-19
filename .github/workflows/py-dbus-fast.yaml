@@ -36,3 +36,4 @@ jobs:
 
       - name: Publish Repository Packages
         run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"
+

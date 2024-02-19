@@ -1,0 +1,26 @@
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+pkgname=py3-dbus-fast
+_pkgname=dbus-fast
+pkgver=2.21.1
+pkgrel=0
+pkgdesc="A faster version of dbus-next"
+url="https://github.com/Bluetooth-Devices/dbus-fast"
+arch="noarch"
+license="MIT"
+depends="python3"
+makedepends="py3-pip"
+source="$pkgname-$pkgver.tar.gz::https://github.com/Bluetooth-Devices/dbus-fast/archive/refs/tags/v${pkgver}.tar.gz"
+builddir="$srcdir/$_pkgname-$pkgver"
+options="!check"  # Not quite set up properly for CI/CD
+
+build() {
+}
+
+package() {
+	pip3 install --prefix=/usr --root="$pkgdir" .
+}
+
+sha512sums="
+e871673a1a251448f71ba15be6c7c08f2dd965eeda99f263bd46631115e877ade3ffda4fa105ff7fc7a8cb2721bd4e4e23de1fe7d46ceb77b8e7973edd982cc6  py3-dbus-fast-2.21.1.tar.gz
+"

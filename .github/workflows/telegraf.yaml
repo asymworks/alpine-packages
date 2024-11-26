@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         #alpine_version: [v3.13, v3.14, v3.15]
-        alpine_version: [v3.18, v3.19]
+        alpine_version: [v3.18, v3.19, v3.20]
         alpine_arch: [x86_64, armhf, aarch64, armv7]
 
     steps:

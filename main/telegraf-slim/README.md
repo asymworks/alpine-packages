@@ -1,0 +1,3 @@
+# Telegraf Alpine Package for Raspberry Pi
+
+This repository builds a slimmed-down version armhf and armv7 versions of [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) for the [Asymworks Alpine Package Repository](https://pkgs.asymworks.net). It includes only basic input and output plugins designed for Raspberry Pi system metric collection to an InfluxDB v2 Data Store. It does not include any processors or aggregators to save binary size.

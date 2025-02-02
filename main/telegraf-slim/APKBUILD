@@ -35,6 +35,7 @@ export BUILDTAGS="custom,${BT_INPUTS},${BT_OUTPUTS}"
 build() {
 	local pkg="github.com/influxdata/telegraf/internal"
 	local ldflags="-X $pkg.Version=$pkgver -X $pkg.Branch=$_branch -X $pkg.Commit=$_commit"
+	go mod download -x
 	go build -ldflags "$ldflags" ./cmd/telegraf
 
 	# Generate sample config.

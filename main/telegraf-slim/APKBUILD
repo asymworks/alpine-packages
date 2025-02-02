@@ -2,9 +2,9 @@
 # Contributor: Konstantin Kulikov <k.kulikov2@gmail.com>
 # Contributor: Jonathan Krauss <jkrauss@asymworks.com>
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
-pkgname=telegraf-slim
+pkgname=telegraf
 pkgver=1.30.2
-pkgrel=0
+pkgrel=0-test
 _commit=6a94f65a # git rev-parse --short HEAD
 _branch=release-${pkgver%.*}
 pkgdesc="A plugin-driven server agent for collecting & reporting metrics, part of the InfluxDB project"
@@ -14,7 +14,7 @@ license="MIT"
 makedepends="go binutils-gold linux-headers"
 checkdepends="tzdata"
 install="$pkgname.pre-install"
-subpackages="$pkgname-openrc $pkgname-doc"
+subpackages="$pkgname-openrc $pkgname-doc $pkgname-slim"
 provides=telegraf
 options="net !check" # disable checks because they consistently time out on Github CI armhf platform
 source="telegraf-$pkgver.tar.gz::https://github.com/influxdata/telegraf/archive/v$pkgver.tar.gz
@@ -35,7 +35,7 @@ export BUILDTAGS="custom,${BT_INPUTS},${BT_OUTPUTS}"
 build() {
 	local pkg="github.com/influxdata/telegraf/internal"
 	local ldflags="-X $pkg.Version=$pkgver -X $pkg.Branch=$_branch -X $pkg.Commit=$_commit"
-	go build -tags "$BUILDTAGS" -ldflags "$ldflags" ./cmd/telegraf
+	go build -ldflags "$ldflags" ./cmd/telegraf
 
 	# Generate sample config.
 	./telegraf config >telegraf.conf
@@ -47,6 +47,14 @@ check() {
 	# plugins/processors/execd: broken on armv7
 	# shellcheck disable=2046
 	go test -short $(go list ./... | grep -Ev '(plugins/processors/scale|plugins/outputs/sql|plugins/processors/execd)')
+}
+
+slim() {
+	pkgdesc="Slim Telegraf for Embedded Devices"
+	replaces="$pkgname"
+	local pkg="github.com/influxdata/telegraf/internal"
+	local ldflags="-X $pkg.Version=$pkgver -X $pkg.Branch=$_branch -X $pkg.Commit=$_commit"
+	go build -tags "$BUILDTAGS" -ldflags "$ldflags" ./cmd/telegraf
 }
 
 package() {

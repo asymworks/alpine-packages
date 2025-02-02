@@ -13,7 +13,7 @@ arch="x86_64 aarch64 armhf armv7"
 license="MIT"
 makedepends="go binutils-gold linux-headers"
 checkdepends="tzdata"
-install="$pkgname.pre-install"
+install="telegraf.pre-install"
 subpackages="$pkgname-openrc $pkgname-doc"
 provides=telegraf
 options="net !check" # disable checks because they consistently time out on Github CI armhf platform
@@ -50,12 +50,12 @@ check() {
 }
 
 package() {
-	install -Dm755 "$srcdir/$pkgname.initd" "$pkgdir/etc/init.d/$pkgname"
-	install -Dm644 "$srcdir/$pkgname.confd" "$pkgdir/etc/conf.d/$pkgname"
-	install -Dm755 "$builddir/$pkgname" "$pkgdir/usr/bin/$pkgname"
-	install -Dm644 "$builddir/$pkgname.conf" "$pkgdir/etc/$pkgname.conf"
-	install -dm755 "$pkgdir/etc/$pkgname.conf.d"
-	install -Dm644 "$builddir/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	install -Dm755 "$srcdir/telegraf.initd" "$pkgdir/etc/init.d/telegraf"
+	install -Dm644 "$srcdir/telegraf.confd" "$pkgdir/etc/conf.d/telegraf"
+	install -Dm755 "$builddir/telegraf" "$pkgdir/usr/bin/telegraf"
+	install -Dm644 "$builddir/telegraf.conf" "$pkgdir/etc/telegraf.conf"
+	install -dm755 "$pkgdir/etc/telegraf.conf.d"
+	install -Dm644 "$builddir/LICENSE" "$pkgdir/usr/share/licenses/telegraf/LICENSE"
 }
 
 sha512sums="

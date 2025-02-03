@@ -9,7 +9,8 @@ _commit=6a94f65a # git rev-parse --short HEAD
 _branch=release-${pkgver%.*}
 pkgdesc="A plugin-driven server agent for collecting & reporting metrics, part of the InfluxDB project"
 url="https://www.influxdata.com/time-series-platform/telegraf/"
-arch="x86_64 aarch64 armhf armv7"
+#arch="x86_64 aarch64 armhf armv7"
+arch="aarch64"
 license="MIT"
 makedepends="go binutils-gold linux-headers"
 checkdepends="tzdata"
@@ -35,8 +36,8 @@ build() {
 	local pkg="github.com/influxdata/telegraf/internal"
 	local ldflags="-X $pkg.Version=$pkgver -X $pkg.Branch=$_branch -X $pkg.Commit=$_commit"
 	go mod download -x
-	go build -ldflags "$ldflags" ./cmd/telegraf
-	go build -o telegraf-slim -tags "$BUILDTAGS" -ldflags "$ldflags" ./cmd/telegraf
+	CGO_ENABLED=0 go build -ldflags "$ldflags" ./cmd/telegraf
+	CGO_ENABLED=0 go build -o telegraf-slim -tags "$BUILDTAGS" -ldflags "$ldflags" ./cmd/telegraf
 
 	# Generate sample config.
 	./telegraf config >telegraf.conf

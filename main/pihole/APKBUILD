@@ -6,7 +6,7 @@
 # diskless installations
 pkgname=pihole-diskless
 pkgver=6.2.2
-pkgrel=1
+pkgrel=2
 _webver=6.2.1 # Can also be out-of-sync with FTL
 _scriptver=6.1.2 # Sometimes trails FTL and web
 pkgdesc="A black hole for Internet advertisements"

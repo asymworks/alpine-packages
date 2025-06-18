@@ -30,6 +30,7 @@ makedepends="
 	mbedtls-dev
 	ncurses-dev
 	nettle-dev
+    ninja-build
 	py3-requests
 	python3
 	readline-dev

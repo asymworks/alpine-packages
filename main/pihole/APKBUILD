@@ -2,11 +2,11 @@
 # Contributor: Jonathan Krauss <jkrauss@asymworks.com>
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
 # 
-# Custom version that omits the post-install Gravity update to work at boot on
-# diskless installations
+# Custom version that omits the post-install Gravity update and includes extra
+# logic to symlink the /etc/pihole directory to work on diskless installations
 pkgname=pihole-diskless
 pkgver=6.2.2
-pkgrel=1
+pkgrel=2
 _webver=6.2.1 # Can also be out-of-sync with FTL
 _scriptver=6.1.2 # Sometimes trails FTL and web
 pkgdesc="A black hole for Internet advertisements"
@@ -30,7 +30,6 @@ makedepends="
 	mbedtls-dev
 	ncurses-dev
 	nettle-dev
-    ninja-build
 	py3-requests
 	python3
 	readline-dev
@@ -72,6 +71,7 @@ source="
 	$pkgname-scripts-$pkgver.tar.gz::https://github.com/pi-hole/pi-hole/archive/refs/tags/v$_scriptver.tar.gz
 
 	pihole-update-gravity.crond
+	pihole.confd
 	pihole.initd
 
 	0001-Support-printing-default-TOML-config.patch
@@ -189,6 +189,7 @@ package() {
 
 	# Install init script
 	install -m755 -D "$srcdir"/pihole.initd "$pkgdir"/etc/init.d/pihole
+	install -m755 -D "$srcdir"/pihole.confd "$pkgdir"/etc/conf.d/pihole
 
 	# Install database migration files
 	install -d -m0755 "$pkgdir"/usr/share/pihole/database_migration/gravity/
@@ -218,17 +219,3 @@ package() {
 	install -Dm644 "$srcdir"/pihole.toml "$pkgdir"/etc/pihole/pihole.toml
 }
 
-sha512sums="
-d31e56c1c822d4164e3b382e5a53d2f821ac9e5df511e2b030cca22656e03f8766d6eb99ca817aad7f74a9404eb33e40268be55ec93e0d07c27e20f36975aa96  pihole-diskless-FTL-6.2.2.tar.gz
-01a0569fab5caf3161c75292d36f07870a49eb98062392bb109638a27df7b4b03ecf0d3ed1b6fa875c685ee5c3b3c1d71bec6db2ee35c5ccf5d8e24b081907ce  pihole-diskless-web-6.2.2.tar.gz
-0c956819335ea814b1c9a9adedcc7469a588647a428ff357d4caa354ba8f21e752c296f7f1a1aea7567e6607f28c9684f653254cabcfe8bcab611af338e22e10  pihole-diskless-scripts-6.2.2.tar.gz
-8d4d2cfbb63cd4c6016af491497f197ad6ba909b10b255893894b9939d9b23579418ebb47593a103c7a642a71e519dc4018dc10b11700f6848f89c799b965499  pihole-update-gravity.crond
-ffc2b23434d2bc4d5d182fc0fddad3729c5461b884da785e7fe5817a6a5b030ea6291dc0c3f18a75b6856590847cea6a00c32faab445fa14eceeb70a0a3fb942  pihole.initd
-b77cad23cc1ad1658c31e46b1e56e4cf9f8fda850cf5ad774c9c617d32263a5ca4c8790f2f721b539f5adaa048f1e93f582a28bdbc9ff626ef8e30587b501246  0001-Support-printing-default-TOML-config.patch
-c3662931540164c7bc211340480022d730a5f0b8a9f3c956469ffcad37a71075f7c03e676b43e0d335f33799b47a0b93ff70c04811de89219057fbf6732abefe  0002-Support-compiling-with-libcurses-instead-of-libtermc.patch
-e8e647f22a59bd3d36e70eb6f284653a070ae2cac56402ce3134ca7a09cb0ce6d7350fcfbb69416fd2fed5fb0662a3998d6fadc15760442c157d61951578676b  0003-Support-configuring-file-paths.patch
-4ea9cd5fcb3fad68ce10c0cf7bbb79e2a9f519c4a52ba2bad6cb6fcdbb4ef0a4ba1f16d7282ad316318426f94a0caf873a3af35d705e591a10317e3180357f2a  0001-Disallow-some-pihole-commands-for-Linux-distros.patch
-3986174dd988692fe35510424831198861b9f60365113a926cf8db55cfdf22dc5ab5345ee3fcb6a9a6538f05faab7fe2363da902bd543c8e4de43c70e67ea938  0002-Use-variables-for-path-roots.patch
-86606a017e2a53de78e844c77ba7e80ff3390f54b089271aafd8a0130e734a9e133c5e2934a5a1570aee5e5e2065e598cbabcb324f93112760d662999e9c6186  0003-Use-FHS-paths.patch
-23498e5194ea8e20c459d3d86e7bf9e7696fafba22a48a629a38472b96495ce5795f02821fcde73339285f9b85bb119f460ee2e49a5a616a213dbf3c0d2ebb66  0004-WIP-Change-some-paths-to-FHS.patch
-"

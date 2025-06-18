@@ -4,7 +4,7 @@
 # 
 # Custom version that omits the post-install Gravity update to work at boot on
 # diskless installations
-pkgname=pihole
+pkgname=pihole-diskless
 pkgver=6.2.2
 pkgrel=1
 _webver=6.2.1 # Can also be out-of-sync with FTL

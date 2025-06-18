@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  telegraf-slim:
+  pihole:
     runs-on: ubuntu-latest
     strategy:
       matrix:

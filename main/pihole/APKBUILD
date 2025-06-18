@@ -1,0 +1,233 @@
+# Contributor: Mike Crute <mike@crute.us>
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+# 
+# Custom version that omits the post-install Gravity update to work at boot on
+# diskless installations
+pkgname=pihole
+pkgver=6.2.2
+pkgrel=1
+_webver=6.2.1 # Can also be out-of-sync with FTL
+_scriptver=6.1.2 # Sometimes trails FTL and web
+pkgdesc="A black hole for Internet advertisements"
+url="https://pi-hole.net/"
+arch="all"
+license="EUPL-1.2"
+# These are needed by the pihole script
+depends="
+	bash
+	cmd:dig
+	cmd:tput
+	coreutils
+	curl
+	"
+makedepends="
+	cmake
+	gmp-dev
+	libidn2-dev
+	libunistring-dev
+	linux-headers
+	mbedtls-dev
+	ncurses-dev
+	nettle-dev
+	py3-requests
+	python3
+	readline-dev
+	xxd
+	"
+checkdepends="
+	bats-core
+	bind-tools
+	curl
+	gdb
+	ncurses
+	shadow
+	"
+# check just doesn't work at all within the Alpine build system. It
+# depends on listening on privileged ports and directing network traffic
+# at itself. It can be made to work in isolated testing with the
+# checkdepends above and these commands though.
+options="!check"
+pkggroups="pihole"
+pkgusers="pihole"
+install="
+	$pkgname.pre-install
+	$pkgname.post-upgrade
+	"
+subpackages="
+	$pkgname-openrc
+	$pkgname-doc
+	$pkgname-bash-completion
+	"
+# Patches from:
+# - https://github.com/mcrute/pihole-FTL	
+# - https://github.com/mcrute/pi-hole
+# To export patches for use here:
+# - git format-patch --src-prefix="a/FTL-6.2.2/" --dst-prefix="b/FTL-6.2.2/" upstream/master..
+# - git format-patch --src-prefix="a/pi-hole-6.1.2/" --dst-prefix="b/pi-hole-6.1.2/" upstream/master..
+source="
+	$pkgname-FTL-$pkgver.tar.gz::https://github.com/pi-hole/FTL/archive/refs/tags/v$pkgver.tar.gz
+	$pkgname-web-$pkgver.tar.gz::https://github.com/pi-hole/web/archive/refs/tags/v$_webver.tar.gz
+	$pkgname-scripts-$pkgver.tar.gz::https://github.com/pi-hole/pi-hole/archive/refs/tags/v$_scriptver.tar.gz
+
+	pihole-update-gravity.crond
+	pihole.initd
+
+	0001-Support-printing-default-TOML-config.patch
+	0002-Support-compiling-with-libcurses-instead-of-libtermc.patch
+	0003-Support-configuring-file-paths.patch
+
+	0001-Disallow-some-pihole-commands-for-Linux-distros.patch
+	0002-Use-variables-for-path-roots.patch
+	0003-Use-FHS-paths.patch
+	0004-WIP-Change-some-paths-to-FHS.patch
+	"
+builddir="$srcdir"
+
+build() {
+	# Build FTL binary
+	cmake \
+		-DCMAKE_C_FLAGS="$CFLAGS" \
+		-DCMAKE_INSTALL_PREFIX="/usr" \
+		-DBUILD_SHARED_LIBS="True" \
+		-DCMAKE_BUILD_TYPE="Release" \
+		-DPIHOLE_STATE_PATH="/var/lib/pihole" \
+		-DPIHOLE_SHARE_PATH="/usr/share/pihole" \
+		-DPIHOLE_BIN_PATH="/usr/bin" \
+		-DPIHOLE_WEB_PATH="/usr/share/pihole/admin-web" \
+		-DPIHOLE_RUN_PATH="/run/pihole" \
+		-B FTL-build \
+		FTL-$pkgver
+
+	# Embed build metadata in the FTL binary
+	GIT_BRANCH="master" \
+	GIT_VERSION="v$pkgver" \
+	GIT_TAG="v$pkgver" \
+		cmake --build FTL-build
+
+	# Generate the default config file
+	FTL-build/pihole-FTL --print-default-config > pihole.toml
+
+	# Write the version file expected by several of the scripts
+	{
+		echo "CORE_VERSION=$_scriptver"
+		echo "WEB_VERSION=$pkgver"
+		echo "FTL_VERSION=$pkgver"
+	} >> versions
+
+	# Generate macvendor.db
+	python3 FTL-$pkgver/tools/macvendor.py
+}
+
+package() {
+	# Pihole needs to own /etc/pihole as well so it can write its
+	# self-generated TLS certificates and the config file at first
+	# startup.
+	#
+	# This is not great but there currently isn't a good way to generate
+ 	# and package the config file since the entire definition is in the
+ 	# C source. The file can be modified on the command line which will
+ 	# generate it but the filename is hardcoded to /etc/pihole/pihole.toml
+ 	# which can't be changed at runtime. Generating the config file would
+ 	# be a nice feature to have upstream so we can package it.
+	install -d -m0755 -o pihole -g pihole \
+		"$pkgdir"/etc/pihole \
+		"$pkgdir"/var/log/pihole \
+		"$pkgdir"/var/lib/pihole
+
+	install -d -m0750 -o pihole -g pihole \
+		"$pkgdir"/run/pihole
+
+	# Install the FTL binary
+	install -Dm755 "$srcdir"/FTL-build/pihole-FTL "$pkgdir"/usr/bin/pihole-FTL
+
+	# Install generated MAC vendor database
+	install -Dm666 "$srcdir"/macvendor.db "$pkgdir"/usr/share/pihole/macvendor.db
+
+	# Install web control panel
+	install -d -m0755 "$pkgdir"/usr/share/pihole/admin-web/
+	cp -r "$srcdir"/web-$_webver/ "$pkgdir"/usr/share/pihole/admin-web/admin
+
+	# Install management scripts
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/pihole "$pkgdir"/usr/bin/pihole
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/gravity.sh \
+		"$pkgdir"/usr/share/pihole/gravity.sh
+
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/version.sh \
+		"$pkgdir"/usr/share/pihole/version.sh
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/query.sh \
+		"$pkgdir"/usr/share/pihole/query.sh
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/api.sh \
+		"$pkgdir"/usr/share/pihole/api.sh
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/list.sh \
+		"$pkgdir"/usr/share/pihole/list.sh
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/piholeARPTable.sh \
+		"$pkgdir"/usr/share/pihole/piholeARPTable.sh
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/utils.sh \
+		"$pkgdir"/usr/share/pihole/utils.sh
+	install -Dm755 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/database_migration/gravity-db.sh \
+		"$pkgdir"/usr/share/pihole/database_migration/gravity-db.sh
+	install -Dm644 "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/COL_TABLE \
+		"$pkgdir"/usr/share/pihole/COL_TABLE
+
+	# These scripts are not installed because they are not supported for
+	# distribution packages (they assume too much control over the system or
+	# would overwrite binaries outside of the package manager).
+	#
+	# - advanced/Scripts/piholeCheckout.sh
+	# - advanced/Scripts/piholeDebug.sh
+	# - advanced/Scripts/piholeLogFlush.sh
+	# - advanced/Scripts/update.sh
+	# - advanced/Scripts/updatecheck.sh
+	# - automated install/basic-install.sh
+	# - automated install/uninstall.sh
+
+	# Install update check cron job
+	install -Dm755 pihole-update-gravity.crond \
+		"$pkgdir"/etc/periodic/weekly/pihole-update-gravity
+
+	# Install init script
+	install -m755 -D "$srcdir"/pihole.initd "$pkgdir"/etc/init.d/pihole
+
+	# Install database migration files
+	install -d -m0755 "$pkgdir"/usr/share/pihole/database_migration/gravity/
+	cp -r "$srcdir"/pi-hole-$_scriptver/advanced/Scripts/database_migration/gravity/*.sql \
+		"$pkgdir"/usr/share/pihole/database_migration/gravity/
+
+	# Install template files
+	install -Dm644 "$srcdir"/pi-hole-$_scriptver/advanced/Templates/gravity.db.sql \
+		"$pkgdir"/usr/share/pihole/templates/gravity.db.sql
+	install -Dm644 "$srcdir"/pi-hole-$_scriptver/advanced/Templates/gravity_copy.sql \
+		"$pkgdir"/usr/share/pihole/templates/gravity_copy.sql
+
+	# Install logrotate config
+	install -D -m644 "$srcdir"/pi-hole-$_scriptver/advanced/Templates/logrotate \
+		"$pkgdir"/etc/logrotate.d/pihole
+
+	# Install bash completions
+	install -Dm644 "$srcdir"/pi-hole-$_scriptver/advanced/bash-completion/pihole \
+		"$pkgdir"/usr/share/bash-completion/completions/$pkgname
+
+	# Install manpages
+	install -Dm644 "$srcdir"/pi-hole-$_scriptver/manpages/pihole.8 \
+		"$pkgdir"/usr/share/man/man8/$pkgname.8
+
+	# Install the version and config file
+	install -Dm644 "$srcdir"/versions "$pkgdir"/etc/pihole/versions
+	install -Dm644 "$srcdir"/pihole.toml "$pkgdir"/etc/pihole/pihole.toml
+}
+
+sha512sums="
+d31e56c1c822d4164e3b382e5a53d2f821ac9e5df511e2b030cca22656e03f8766d6eb99ca817aad7f74a9404eb33e40268be55ec93e0d07c27e20f36975aa96  pihole-FTL-6.2.2.tar.gz
+01a0569fab5caf3161c75292d36f07870a49eb98062392bb109638a27df7b4b03ecf0d3ed1b6fa875c685ee5c3b3c1d71bec6db2ee35c5ccf5d8e24b081907ce  pihole-web-6.2.2.tar.gz
+0c956819335ea814b1c9a9adedcc7469a588647a428ff357d4caa354ba8f21e752c296f7f1a1aea7567e6607f28c9684f653254cabcfe8bcab611af338e22e10  pihole-scripts-6.2.2.tar.gz
+8d4d2cfbb63cd4c6016af491497f197ad6ba909b10b255893894b9939d9b23579418ebb47593a103c7a642a71e519dc4018dc10b11700f6848f89c799b965499  pihole-update-gravity.crond
+af8e99bfb27db8487a9017da0066c25eab3cbe9b7a4d286d32bbb22b3e0130ea13513f95e2a9b5330170251cf3ce22a7f47f1361fa4b62e29550d77ddb888da1  pihole.initd
+b77cad23cc1ad1658c31e46b1e56e4cf9f8fda850cf5ad774c9c617d32263a5ca4c8790f2f721b539f5adaa048f1e93f582a28bdbc9ff626ef8e30587b501246  0001-Support-printing-default-TOML-config.patch
+c3662931540164c7bc211340480022d730a5f0b8a9f3c956469ffcad37a71075f7c03e676b43e0d335f33799b47a0b93ff70c04811de89219057fbf6732abefe  0002-Support-compiling-with-libcurses-instead-of-libtermc.patch
+e8e647f22a59bd3d36e70eb6f284653a070ae2cac56402ce3134ca7a09cb0ce6d7350fcfbb69416fd2fed5fb0662a3998d6fadc15760442c157d61951578676b  0003-Support-configuring-file-paths.patch
+4ea9cd5fcb3fad68ce10c0cf7bbb79e2a9f519c4a52ba2bad6cb6fcdbb4ef0a4ba1f16d7282ad316318426f94a0caf873a3af35d705e591a10317e3180357f2a  0001-Disallow-some-pihole-commands-for-Linux-distros.patch
+3986174dd988692fe35510424831198861b9f60365113a926cf8db55cfdf22dc5ab5345ee3fcb6a9a6538f05faab7fe2363da902bd543c8e4de43c70e67ea938  0002-Use-variables-for-path-roots.patch
+86606a017e2a53de78e844c77ba7e80ff3390f54b089271aafd8a0130e734a9e133c5e2934a5a1570aee5e5e2065e598cbabcb324f93112760d662999e9c6186  0003-Use-FHS-paths.patch
+23498e5194ea8e20c459d3d86e7bf9e7696fafba22a48a629a38472b96495ce5795f02821fcde73339285f9b85bb119f460ee2e49a5a616a213dbf3c0d2ebb66  0004-WIP-Change-some-paths-to-FHS.patch
+"

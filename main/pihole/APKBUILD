@@ -206,11 +206,11 @@ package() {
 
 	# Install bash completions
 	install -Dm644 "$srcdir"/pi-hole-$_scriptver/advanced/bash-completion/pihole \
-		"$pkgdir"/usr/share/bash-completion/completions/$pkgname
+		"$pkgdir"/usr/share/bash-completion/completions/pihole
 
 	# Install manpages
 	install -Dm644 "$srcdir"/pi-hole-$_scriptver/manpages/pihole.8 \
-		"$pkgdir"/usr/share/man/man8/$pkgname.8
+		"$pkgdir"/usr/share/man/man8/pihole.8
 
 	# Install the version and config file
 	install -Dm644 "$srcdir"/versions "$pkgdir"/etc/pihole/versions

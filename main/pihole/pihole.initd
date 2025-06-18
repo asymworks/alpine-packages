@@ -20,4 +20,12 @@ depend() {
 start_pre() {
 	checkpath -d -m 0750 -o "$command_user" /run/pihole
 	checkpath -d -o pihole:pihole /var/lib/pihole
+
+	if [ ! -z $PIHOLE_CONFIG_DIR ] ; then
+		checkpath -d -o pihole:pihole $PIHOLE_CONFIG_DIR
+		[ -d /etc/pihole ] && rm -rf /etc/pihole
+		ebegin "Linking /etc/pihole to ${PIHOLE_CONFIG_DIR}"
+		ln -s $PIHOLE_CONFIG_DIR /etc/pihole
+		eend 0
+	fi
 }

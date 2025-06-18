@@ -1,0 +1,4 @@
+# Set a different PiHole configuration directory. The /etc/pihole
+# folder will be symlinked to the specified location before PiHole
+# is started. Note that any files already in /etc/pihole are deleted.
+# PIHOLE_CONFIG_DIR=/media/data/pihole/config

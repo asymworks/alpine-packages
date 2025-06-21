@@ -35,7 +35,7 @@ jobs:
         with:
           path: |
             main/vector/cache
-          key: ${{ matrix.alpine_arch }}-vector-rust-${{ hashFiles('**/*.d') }}
+          key: ${{ matrix.alpine_arch }}-vector-rust-${{ hashFiles('APKBUILD') }}
           restore-keys: |
             ${{ matrix.alpine_arch }}-vector-rust-
 

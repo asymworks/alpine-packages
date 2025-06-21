@@ -64,12 +64,12 @@ build() {
 		--no-default-features \
 		--features default-musl,component-validation-runner
 
-	# cargo auditable build \
-	# 	--release \
-	# 	--frozen \
-	# 	--no-default-features \
-	# 	--features default-musl-slim,component-validation-runner \
-	# 	--target-dir slim
+	cargo auditable build \
+		--release \
+		--frozen \
+		--no-default-features \
+		--features default-musl-slim,component-validation-runner \
+		--target-dir slim
 
 	# cargo-nextest drops the release build, so back it up here
 	cp -r target/release releasebuild
@@ -99,17 +99,17 @@ package() {
 	install -Dm644 "$srcdir"/vector.confd "$pkgdir"/etc/conf.d/vector
 }
 
-# slim() {
-# 	pkgdesc="Slim version of $pkgname for embedded systems"
-# 	replaces="vector"
+slim() {
+	pkgdesc="Slim version of $pkgname for embedded systems"
+	replaces="vector"
 
-# 	pwd
-# 	ls -la slim/
+	ls -la $builddir
+	ls -la $builddir/slim
 
-# 	install -Dm755 slim/relese/vector -t "$pkgdir"/usr/bin/
-# 	install -Dm644 config/vector.yaml -t "$pkgdir"/etc/vector/
-# 	install -Dm644 "$srcdir"/logrotate "$pkgdir"/etc/logrotate.d/vector
-# }
+	install -Dm755 "$builddir"/slim/relese/vector -t "$subpkgdir"/usr/bin/
+	install -Dm644 "$builddir"/config/vector.yaml -t "$subpkgdir"/etc/vector/
+	install -Dm644 "$srcdir"/logrotate "$subpkgdir"/etc/logrotate.d/vector
+}
 
 sha512sums="
 e2df43042141c8e87e02248b9dee56d4829ad65acdc582d9c3b15c3a89f0971b01972b09fe6a82418a09931cbdfed0edd1d0374805118d067a4bc13dec6baa82  vector-0.47.0.tar.gz

@@ -23,11 +23,6 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Check Cache Env
-        run: |
-          env
-          echo "${{ env.ACTIONS_CACHE_URL }}"
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@master
         with:
@@ -44,10 +39,11 @@ jobs:
 
       - name: Build Package
         run: |
+          echo "${{ env.ACTIONS_CACHE_URL }}" "${{ env.ACTIONS_RUNTIME_TOKEN }}"
           docker run --rm \
             -e "RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}" \
             -e "ACTIONS_CACHE_URL=${{ env.ACTIONS_CACHE_URL }}" \
-            -e "ACTIONS_RUNTIME_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}"
+            -e "ACTIONS_RUNTIME_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}" \
             -e SCCACHE_GHA_ENABLED=on \
             -v "${{ github.workspace }}/main/vector:/home/builder/main/package" \
             -v "${HOME}/packages:/packages" \

@@ -1,0 +1,44 @@
+--- a/Cargo.toml	2025-06-21 06:43:57
++++ b/Cargo.toml	2025-06-21 06:52:44
+@@ -475,6 +475,41 @@
+ default-no-vrl-cli = ["api", "sinks", "sources", "sources-dnstap", "transforms", "unix", "rdkafka?/gssapi-vendored", "secrets"]
+ tokio-console = ["dep:console-subscriber", "tokio/tracing"]
+ 
++# Slimmed down version for local log parsing/transform/shipping to Vector/Loki/HTTP only
++default-musl-slim = [
++  "enrichment-tables",
++  "sinks-console",
++  "sinks-file",
++  "sinks-http",
++  "sinks-loki",
++  "sinks-socket",
++  "sinks-vector",
++  "sources-demo_logs",
++  "sources-docker_logs",
++  "sources-exec",
++  "sources-file",
++  "sources-internal_logs",
++  "sources-journald",
++  "sources-file_descriptor",
++  "sources-socket",
++  "sources-stdin",
++  "sources-syslog",
++  "sources-dnstap",
++  "transforms-dedupe",
++  "transforms-filter",
++  "transforms-window",
++  "transforms-log_to_metric",
++  "transforms-lua",
++  "transforms-metric_to_log",
++  "transforms-reduce",
++  "transforms-remap",
++  "transforms-route",
++  "transforms-exclusive-route",
++  "transforms-sample",
++  "transforms-throttle",
++  "unix"
++]
++
+ # Enables the binary secret-backend-example
+ secret-backend-example = ["transforms"]
+ 

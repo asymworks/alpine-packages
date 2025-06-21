@@ -1,0 +1,103 @@
+# Contributor: Hoang Nguyen <folliekazetani@protonmail.com>
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+pkgname=vector
+pkgver=0.47.0
+pkgrel=1
+pkgdesc="High-performance observability data pipeline"
+url="https://vector.dev/"
+arch="x86_64 aarch64 armhf armv7"
+license="MPL-2.0"
+makedepends="
+	cargo
+	cargo-auditable
+	cmake
+	librdkafka-dev
+	openssl-dev
+	perl
+	protobuf-dev
+	protoc
+	python3
+	zlib-ng-dev
+	zstd-dev
+	"
+checkdepends="bash cargo-nextest tzdata"
+subpackages="$pkgname-doc $pkgname-openrc $pkgname-slim"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/vectordotdev/vector/archive/refs/tags/v$pkgver.tar.gz
+	use-system-libs.patch
+	add-slim-target.patch
+	vector.initd
+	vector.confd
+	logrotate
+	"
+
+export OPENSSL_NO_VENDOR=1
+
+prepare() {
+	default_prepare
+
+	# Rust target triple.
+	local target=$(rustc -vV | sed -n 's/host: //p')
+
+	# Build against system-provided zlib-ng
+	mkdir -p .cargo
+	cat >> .cargo/config.toml <<-EOF
+		[target.$target]
+		z-ng = { rustc-link-lib = ["z-ng"], rustc-cfg = ["zng"] }
+	EOF
+
+	# "cargo auditable build" still tries to pull dependencies for other platforms
+	cargo fetch --locked
+}
+
+build() {
+	cargo auditable build \
+		--release \
+		--frozen \
+		--no-default-features \
+		--features default-musl,component-validation-runner
+
+	cargo auditable build \
+		--release \
+		--frozen \
+		--no-default-features \
+		--features default-musl-slim,component-validation-runner \
+		--target-dir slim
+
+	# cargo-nextest drops the release build, so back it up here
+	cp -r target/release releasebuild
+}
+
+check() {
+	# Upstream recommends running tests with "cargo nextest" instead of "cargo test"
+	cargo nextest run \
+		--fail-fast \
+		--frozen \
+		--no-default-features \
+		--offline \
+		--release \
+		--workspace \
+		--test-threads num-cpus
+}
+
+package() {
+	install -Dm755 releasebuild/vector -t "$pkgdir"/usr/bin/
+	install -Dm644 config/vector.yaml -t "$pkgdir"/etc/vector/
+	install -Dm644 "$srcdir"/logrotate "$pkgdir"/etc/logrotate.d/vector
+
+	mkdir -p "$pkgdir"/usr/share/doc/vector
+	cp -r config/examples "$pkgdir"/usr/share/doc/vector/examples
+
+	install -Dm755 "$srcdir"/vector.initd "$pkgdir"/etc/init.d/vector
+	install -Dm644 "$srcdir"/vector.confd "$pkgdir"/etc/conf.d/vector
+}
+
+sha512sums="
+e2df43042141c8e87e02248b9dee56d4829ad65acdc582d9c3b15c3a89f0971b01972b09fe6a82418a09931cbdfed0edd1d0374805118d067a4bc13dec6baa82  vector-0.47.0.tar.gz
+e6802979365615ecfa29acfa684b0e0e01a25deef0d21e36cf61daad2c2eb537602255ed48be190d0ca0f46a3586e80033a1636b5471919e50a64dd3060c7f2d  use-system-libs.patch
+548302e73057bb49b798e9f81a1a74517dedda17400b25250b93e777d96ea400f8d4ffdbcd801bb4f47aaf357c876b63bc1eacdb049f806c4225ff5d90cc3199  add-slim-target.patch
+806c2594d9d7b4bf1c24436a3982801a37ec3d8784acb97266eb7111fe35d8d05a64ef981100bd8aa35a71ad9c7c98de634428f696bded31993143ca572b6757  vector.initd
+313f79e65e61754e8a611f8221d7c0cf36ee5af6f30aeff720924e64bb03d7f44c54fc31ae20926c354905f61df347830a7cba0c37afd41c1f59a25c52fa6f06  vector.confd
+62db792de321655558bdb23ab9b3a7b35b84de445657011d88e8205cce4a926ff7b20f5304ec48fa646f1f259ad2136eceb5a377c4520071799da502eeff7592  logrotate
+"

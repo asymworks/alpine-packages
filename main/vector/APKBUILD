@@ -101,9 +101,9 @@ slim() {
 	pkgdesc="Slim version of $pkgname for embedded systems"
 	replaces="vector"
 
-	ls -la
+	ls -la slim/
 
-	install -Dm755 slim/vector -t "$pkgdir"/usr/bin/
+	install -Dm755 slim/relese/vector -t "$pkgdir"/usr/bin/
 	install -Dm644 config/vector.yaml -t "$pkgdir"/etc/vector/
 	install -Dm644 "$srcdir"/logrotate "$pkgdir"/etc/logrotate.d/vector
 }

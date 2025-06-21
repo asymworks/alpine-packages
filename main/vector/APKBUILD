@@ -37,6 +37,7 @@ export OPENSSL_NO_VENDOR=1
 
 # Use sccache to cache dependencies
 export RUSTC_WRAPPER=sccache
+export SCCACHE_DIR=$startdir/cache
 
 prepare() {
 	default_prepare

@@ -34,8 +34,9 @@ jobs:
         id: cache-restore
         uses: actions/cache/restore@v4
         with:
+          # Cache directory: /home/builder/main/package/cache (within Docker container)
           path: |
-            main/vector/cache
+            ${{ github.workspace }}/main/vector/cache
           # key: ${{ matrix.alpine_arch }}-vector-rust-${{ hashFiles('main/vector/APKBUILD') }}
           key: ${{ matrix.alpine_arch }}-vector-rust
           restore-keys: |
@@ -57,7 +58,7 @@ jobs:
         with:
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
           path: |
-            main/vector/cache
+            ${{ github.workspace }}/main/vector/cache
 
       - name: Publish Repository Packages
         run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"

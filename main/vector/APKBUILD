@@ -57,6 +57,8 @@ prepare() {
 }
 
 build() {
+	echo "Cache directory: ${SCCACHE_DIR}"
+
 	cargo auditable build \
 		--release \
 		--frozen \
@@ -105,7 +107,7 @@ slim() {
 	ls -la $builddir
 	ls -la $builddir/slim
 
-	install -Dm755 "$builddir"/slim/relese/vector -t "$subpkgdir"/usr/bin/
+	install -Dm755 "$builddir"/slim/release/vector -t "$subpkgdir"/usr/bin/
 	install -Dm644 "$builddir"/config/vector.yaml -t "$subpkgdir"/etc/vector/
 	install -Dm644 "$srcdir"/logrotate "$subpkgdir"/etc/logrotate.d/vector
 }

@@ -23,8 +23,7 @@ makedepends="
 	zstd-dev
 	"
 checkdepends="bash cargo-nextest tzdata"
-#subpackages="$pkgname-doc $pkgname-openrc $pkgname-slim"
-subpackages="$pkgname-doc $pkgname-openrc"
+subpackages="$pkgname-doc $pkgname-openrc $pkgname-slim"
 source="
 	$pkgname-$pkgver.tar.gz::https://github.com/vectordotdev/vector/archive/refs/tags/v$pkgver.tar.gz
 	use-system-libs.patch

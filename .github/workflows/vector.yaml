@@ -30,8 +30,9 @@ jobs:
       - name: Synchronize Repository Packages
         run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ${HOME}/packages
 
-      - name: Cache Rust Dependencies
-        uses: actions/cache@v4
+      - name: Restore Cached Rust Dependencies
+        id: cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: |
             main/vector/cache
@@ -47,6 +48,15 @@ jobs:
             -v "${{ github.workspace }}/main/vector:/home/builder/main/package" \
             -v "${HOME}/packages:/packages" \
             asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
+
+      - name: Cache Rust Dependencies
+        # if: always() && steps.cache-restore.outputs.cache-hit != 'true'
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+          path: |
+            main/vector/cache
 
       - name: Publish Repository Packages
         run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"

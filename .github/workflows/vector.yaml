@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         alpine_version: [v3.22]
-        alpine_arch: [x86_64, aarch64]
+        alpine_arch: [x86_64]
 
     steps:
       - uses: actions/checkout@v2
@@ -20,6 +20,63 @@ jobs:
         uses: docker/setup-qemu-action@master
         with:
           platforms: all
+
+      - name: Install Deploy SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Synchronize Repository Packages
+        run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ${HOME}/packages
+
+      - name: Restore Cached Rust Dependencies
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          # Cache directory: /home/builder/main/package/cache (within Docker container)
+          path: |
+            ${{ github.workspace }}/main/vector/cache
+          # key: ${{ matrix.alpine_arch }}-vector-rust-${{ hashFiles('main/vector/APKBUILD') }}
+          key: ${{ matrix.alpine_arch }}-vector-rust
+          restore-keys: |
+            ${{ matrix.alpine_arch }}-vector-rust-
+
+      - name: Build Package
+        run: |
+          echo "${{ env.ACTIONS_CACHE_URL }}" "${{ env.ACTIONS_RUNTIME_TOKEN }}"
+          docker run --rm \
+            -e "RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}" \
+            -v "${{ github.workspace }}/main/vector:/home/builder/main/package" \
+            -v "${HOME}/packages:/packages" \
+            asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
+
+      - name: Cache Rust Dependencies
+        # if: always() && steps.cache-restore.outputs.cache-hit != 'true'
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+          path: |
+            ${{ github.workspace }}/main/vector/cache
+
+      - name: Publish Repository Packages
+        run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"
+
+  vector-arm:
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        alpine_version: [v3.22]
+        alpine_arch: [aarch64]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@master
+      #   with:
+      #     platforms: all
 
       - name: Install Deploy SSH Key
         uses: shimataro/ssh-key-action@v2

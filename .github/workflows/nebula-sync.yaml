@@ -1,0 +1,74 @@
+name: nebula-sync
+on:
+  push:
+    paths:
+      - "main/nebula-sync/**"
+  workflow_dispatch:
+
+jobs:
+  nebula-sync:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        alpine_version: [v3.22]
+        alpine_arch: [x86_64]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: all
+
+      - name: Install Deploy SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Synchronize Repository Packages
+        run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ${HOME}/packages
+
+      - name: Build Package
+        run: |
+          echo "${{ env.ACTIONS_CACHE_URL }}" "${{ env.ACTIONS_RUNTIME_TOKEN }}"
+          docker run --rm \
+            -e "RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}" \
+            -v "${{ github.workspace }}/main/nebula-sync:/home/builder/main/package" \
+            -v "${HOME}/packages:/packages" \
+            asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
+
+      - name: Publish Repository Packages
+        run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"
+
+  nebula-sync-arm:
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        alpine_version: [v3.22]
+        alpine_arch: [aarch64]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Deploy SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Synchronize Repository Packages
+        run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ${HOME}/packages
+
+      - name: Build Package
+        run: |
+          echo "${{ env.ACTIONS_CACHE_URL }}" "${{ env.ACTIONS_RUNTIME_TOKEN }}"
+          docker run --rm \
+            -e "RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}" \
+            -v "${{ github.workspace }}/main/nebula-sync:/home/builder/main/package" \
+            -v "${HOME}/packages:/packages" \
+            asymworks/alpine-abuild-${{ matrix.alpine_arch }}:${{ matrix.alpine_version }}
+
+      - name: Publish Repository Packages
+        run: rsync -avz ~/packages/main/${{ matrix.alpine_arch }}/./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}/"

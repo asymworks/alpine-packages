@@ -16,8 +16,11 @@ start_pre() {
 	checkpath --directory --owner $command_user --mode 0775 \
 		/run/$RC_SVCNAME
 
-	if ! [ -e /var/lib/kanidm/chain.pem ]; then
-		eerror "Certificate /var/lib/kanidm/chain.pem doesn't exist."
+	local certfile=$(grep '^\s*tls_chain\s*=' /etc/kanidm/server.toml | awk -F= '{gsub(/[ "]/,"",$0);print $2}')
+	certfile=${certfile:-/var/lib/kanidm/chain.pem}
+
+	if ! [ -e "${certfile}" ]; then
+		eerror "Certificate ${certfile} doesn't exist."
 		eerror "You can generate a self-signed certificate with"
 		eerror "	kanidmd cert-generate -c /etc/kanidm/server.toml"
 		return 1

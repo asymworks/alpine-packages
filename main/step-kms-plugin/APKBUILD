@@ -1,0 +1,42 @@
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+maintainer="Jonathan Krauss <jkrauss@asymworks.com>"
+pkgname=step-kms-plugin
+pkgver=0.14.1
+pkgrel=0
+pkgdesc="Step plugin to manage keys and certificates on a cloud KMSs and HSMs."
+url="https://github.com/smallstep/step-kms-plugin"
+arch="all"
+license="Apache-2.0"
+depends="pcsc-lite-libs"
+makedepends="
+	bash
+	go
+	go-bindata
+	pcsc-lite-dev
+	"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/smallstep/$pkgname/archive/refs/tags/v$pkgver.tar.gz
+	"
+options="net"
+builddir="$srcdir/$pkgname-$pkgver"
+
+export GOCACHE="${GOCACHE:-"$srcdir/go-cache"}"
+export GOTMPDIR="${GOTMPDIR:-"$srcdir"}"
+export GOMODCACHE="${GOMODCACHE:-"$srcdir/go"}"
+
+build() {
+	make CGO_OVERRIDE= build
+}
+
+check() {
+	go  test ./...
+}
+
+package() {
+	cd $builddir
+	make CGO_OVERRIDE= DESTDIR="$pkgdir"/usr/bin install
+}
+
+sha512sums="
+9eeed49db8bf4a5daab998e0d95ed9f8d9aa23432e956eeb1129a4b02e21bf3f5404111a9d9a139ff5802160a91ca3e23226d51347da6d321feb52e2e822f091  step-kms-plugin-0.14.1.tar.gz
+"

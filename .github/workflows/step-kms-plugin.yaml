@@ -2,7 +2,7 @@ name: step-kms-plugin
 on:
   push:
     paths:
-      - "main/kanidm/**"
+      - "main/step-kms-plugin/**"
   workflow_dispatch:
 
 jobs:

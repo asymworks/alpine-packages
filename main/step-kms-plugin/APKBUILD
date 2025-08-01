@@ -1,8 +1,8 @@
 # Contributor: Jonathan Krauss <jkrauss@asymworks.com>
 maintainer="Jonathan Krauss <jkrauss@asymworks.com>"
 pkgname=step-kms-plugin
-pkgver=0.14.2
-pkgrel=0
+pkgver=0.14.1
+pkgrel=1
 pkgdesc="Step plugin to manage keys and certificates on a cloud KMSs and HSMs."
 url="https://github.com/smallstep/step-kms-plugin"
 arch="all"

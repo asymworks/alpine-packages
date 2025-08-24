@@ -27,7 +27,7 @@ build() {
 
 package() {
 	install -Dm755 "$builddir"/acme-dns "$pkgdir"/usr/bin/acme-dns
-	install -Dm644 "$srcdir"/config.cfg "$pkgdir"/etc/acme-dns/config.cfg
+	install -Dm644 "$builddir"/config.cfg "$pkgdir"/etc/acme-dns/config.cfg
 
 	install -Dm644 "$srcdir"/acme-dns.confd "$pkgdir"/etc/conf.d/acme-dns
 	install -Dm755 "$srcdir"/acme-dns.initd "$pkgdir"/etc/init.d/acme-dns

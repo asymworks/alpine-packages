@@ -47,7 +47,7 @@ jobs:
     strategy:
       matrix:
         alpine_version: [v3.22]
-        alpine_arch: [aarch64, armv7, armhf]
+        alpine_arch: [aarch64]
 
     steps:
       - uses: actions/checkout@v2

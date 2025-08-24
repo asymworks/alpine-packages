@@ -10,6 +10,8 @@ extra_started_commands="reload"
 output_log="${logfile}"
 error_log="${logfile}"
 
+export GATUS_CONFIG_PATH=${GATUS_CONFIG_PATH:-/etc/gatus.d}
+
 depend() {
 	need net
 	after firewall

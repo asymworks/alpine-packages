@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+
+: ${logfile:="/var/log/$RC_SVCNAME"}
+
+command="/usr/bin/acme-dns"
+command_background=yes
+command_user=root:root
+pidfile="/run/$RC_SVCNAME.pid"
+output_log="${logfile}"
+error_log="${logfile}"
+
+depend() {
+	need net
+	after firewall
+}
+
+start_pre() {
+	checkpath -d -o $command_user /var/lib/acme-dns
+}

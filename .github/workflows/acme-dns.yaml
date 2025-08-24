@@ -29,7 +29,7 @@ jobs:
 
       - name: Synchronize Repository Packages
         run: |
-          mkdir -p /packages/main/${{ matrix.alpine_arch }}
+          mkdir -p ${HOME}/packages/main/${{ matrix.alpine_arch }}
           rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}" ${HOME}/packages/main
 
       - name: Build Package
@@ -67,7 +67,7 @@ jobs:
 
       - name: Synchronize Repository Packages
         run: |
-          mkdir -p /packages/main/${{ matrix.alpine_arch }}
+          mkdir -p ${HOME}/packages/main/${{ matrix.alpine_arch }}
           rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}" ${HOME}/packages/main
 
       - name: Build Package

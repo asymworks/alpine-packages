@@ -1,0 +1,2 @@
+# Set the Gatus configuration directory
+GATUS_CONFIG_PATH=/etc/gatus.d

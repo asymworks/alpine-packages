@@ -1,0 +1,16 @@
+---
+# Gatus Default Configuration File
+#
+# Gatus will read all files in the /etc/gatus.d directory in file name order,
+# and merge the YAML structure from each. This file contains the top level
+# configuration for Gatus and expects that endpoints and notifications are
+# set up in subsequent files.
+
+# Storage Configuration
+#
+# This sets up storage in memory, which is the default. To persist monitoring
+# data, use either the `sqlite` or `postgres` storage backend.
+storage:
+  type: memory
+  maximum-number-of-results: 200
+  maximum-number-of-events: 5

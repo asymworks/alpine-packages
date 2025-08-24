@@ -1,0 +1,12 @@
+/var/log/gatus {
+	rotate 4
+	weekly
+	compress
+	delaycompress
+	notifempty
+	missingok
+	copytruncate
+	minsize 100k
+	create 0644 root root
+	endscript
+}

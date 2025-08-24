@@ -1,0 +1,47 @@
+# Contributor: Jonathan Krauss <jkrauss@asymworks.com>
+# Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
+pkgname=gatus
+pkgver=5.23.2
+pkgrel=0
+pkgdesc="Automated developer-oriented status page"
+url="https://github.com/TwiN/gatus"
+arch="x86_64 aarch64 armhf armv7"
+license="Apache-2.0"
+makedepends="go binutils-gold"
+checkdepends=""
+options="net !check" # disable checks because they require a running Docker daemon
+subpackages="$pkgname-openrc"
+source="
+	$pkgname-$pkgver.tar.gz::https://github.com/TwiN/gatus/archive/refs/tags/v$pkgver.tar.gz
+	00-default.yaml
+	gatus.confd
+	gatus.initd
+	logrotate
+"
+
+build() {
+	go mod tidy
+
+	export CGO_ENABLED=0
+	export GOOS=linux
+	export GOFLAGS="-a -installsuffix=cgo -o=gatus"
+
+	go build .
+}
+
+package() {
+	install -Dm755 "$builddir"/gatus "$pkgdir"/usr/bin/gatus
+	install -Dm644 "$srcdir"/00-default.yaml "$pkgdir"/etc/gatus.d/00-default.yaml
+	install -Dm644 "$srcdir"/logrotate "$pkgdir"/etc/logrotate.d/gatus
+
+	install -Dm644 "$srcdir"/gatus.confd "$pkgdir"/etc/conf.d/gatus
+	install -Dm755 "$srcdir"/gatus.initd "$pkgdir"/etc/init.d/gatus
+}
+
+sha512sums="
+c4c2402fcccb51caf13240fe04c9f082c8d8b1d8c9653842f4f8037b07868e4c6130beaedda7e085ad372a8885fa4c838b45c2bc6701388235793962d9a04e87  gatus-5.23.2.tar.gz
+19324bddf88a5d91a0f2d4dcc21a3c5d796ef5323c0568b61e4f9517da724021b57aec43d2c652cc40c61d26f000f214034ee23ebc6a07445203fe23b0f8209b  00-default.yaml
+e5638470dbc60cf35299017c73f69ef4619754e7be22a3744571e6205005a06ae5531d4cba05749e54a85022449e9dd22131e56a4e914e50e803766d5c5edaa8  gatus.confd
+9c22f96503c68ada4896e869b841c46e4249571c49783b530cb0d301012be5fb78f9afff24a86cf2c8158cba4405ad917ae57eaef519cb9d82cef32b0837c907  gatus.initd
+e9566fa3950c3c88130d8edf5d34f4b46d37f6dccc7bccbb8aa4f23a39c00247c40f1be8ea396aade24df9e8a9014b76e56172fadd7e0f7c9891e4a41910194c  logrotate
+"

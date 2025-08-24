@@ -28,7 +28,9 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Synchronize Repository Packages
-        run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ${HOME}/packages
+        run: |
+          mkdir -P /packages/main/${{ matrix.alpine_arch }}
+          rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}" ${HOME}/packages/main
 
       - name: Build Package
         run: |
@@ -64,7 +66,9 @@ jobs:
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Synchronize Repository Packages
-        run: rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main" ${HOME}/packages
+        run: |
+          mkdir -P /packages/main/${{ matrix.alpine_arch }}
+          rsync -avz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/srv/pkg/webroot/alpine/${{ matrix.alpine_version }}/main/${{ matrix.alpine_arch }}" ${HOME}/packages/main
 
       - name: Build Package
         run: |

@@ -1,7 +1,7 @@
 # Contributor: Jonathan Krauss <jkrauss@asymworks.com>
 # Maintainer: Jonathan Krauss <jkrauss@asymworks.com>
 pkgname=gatus
-pkgver=5.23.2
+pkgver=5.26.0
 pkgrel=1
 pkgdesc="Automated developer-oriented status page"
 url="https://github.com/TwiN/gatus"

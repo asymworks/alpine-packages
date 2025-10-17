@@ -1,2 +1,5 @@
 # Override the Gatus configuration directory
 # GATUS_CONFIG_PATH=/etc/gatus.d
+
+# Change the logging level
+# GATUS_LOG_LEVEL=INFO

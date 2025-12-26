@@ -30,12 +30,12 @@ diff -Naur a/server/core/templates/enrol_device.html b/server/core/templates/enr
 diff -Naur a/server/core/templates/user_settings_partial_base.html b/server/core/templates/user_settings_partial_base.html
 --- a/server/core/templates/user_settings_partial_base.html	2025-06-10 22:59:33
 +++ b/server/core/templates/user_settings_partial_base.html	2025-07-17 11:30:08
-@@ -20,7 +20,7 @@
-             ProfileMenuItems::UserProfile, "person") %)
-             (% call side_menu_item("Credentials", (Urls::UpdateCredentials),
-             ProfileMenuItems::Credentials, "shield-lock") %)
--            (% call side_menu_item("Enrol Device", (Urls::EnrolDevice),
-+            (% call side_menu_item("Enroll Device", (Urls::EnrolDevice),
-             ProfileMenuItems::EnrolDevice, "phone-flip") %)
+@@ -25,7 +25,7 @@
+             ProfileMenuItems::UserProfile, "person") %) (% call
+             side_menu_item("Credentials", (Urls::UpdateCredentials),
+             ProfileMenuItems::Credentials, "shield-lock") %) (% call
+-            side_menu_item("Enrol Device", (Urls::EnrolDevice),
++            side_menu_item("Enroll Device", (Urls::EnrolDevice),
+             ProfileMenuItems::EnrolDevice, "phone-flip") %) (% call
          </ul>
          <div id="settings-window" class="flex-grow-1 ps-sm-4 ps-md-5 pt-sm-0 pt-4">

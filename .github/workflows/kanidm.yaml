@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        alpine_version: [v3.22]
+        alpine_version: [v3.23]
         alpine_arch: [x86_64]
 
     steps:
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
-        alpine_version: [v3.22]
+        alpine_version: [v3.23]
         alpine_arch: [aarch64]
 
     steps:

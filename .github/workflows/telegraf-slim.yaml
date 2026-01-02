@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
-        alpine_version: [v3.22, edge]
+        alpine_version: [v3.23, edge]
         alpine_arch: [aarch64]
 
     steps:

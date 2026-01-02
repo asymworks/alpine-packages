@@ -21,14 +21,20 @@ jobs:
         with:
           platforms: all
 
-      - name: Cache Go Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            main/telegraf-slim/cache
-          key: ${{ matrix.alpine_arch }}-slim-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ matrix.alpine_arch }}-slim-go-
+      # - name: Cache Go Dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       main/telegraf-slim/cache
+      #     key: ${{ matrix.alpine_arch }}-slim-go-${{ hashFiles('**/go.sum') }}
+      #     restore-keys: |
+      #       ${{ matrix.alpine_arch }}-slim-go-
+
+      - name: Check Disk Usage
+        run: |
+          df -h /
+          du -sh /* 2>/dev/null | sort -hr | head -10
+          uname -m
 
       - name: Install Deploy SSH Key
         uses: shimataro/ssh-key-action@v2
@@ -55,14 +61,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Go Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            main/telegraf-slim/cache
-          key: ${{ matrix.alpine_arch }}-slim-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ matrix.alpine_arch }}-slim-go-
+      # - name: Cache Go Dependencies
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       main/telegraf-slim/cache
+      #     key: ${{ matrix.alpine_arch }}-slim-go-${{ hashFiles('**/go.sum') }}
+      #     restore-keys: |
+      #       ${{ matrix.alpine_arch }}-slim-go-
+
+      - name: Check Disk Usage
+        run: |
+          df -h /
+          du -sh /* 2>/dev/null | sort -hr | head -10
+          uname -m
 
       - name: Install Deploy SSH Key
         uses: shimataro/ssh-key-action@v2

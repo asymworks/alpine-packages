@@ -30,11 +30,26 @@ jobs:
       #     restore-keys: |
       #       ${{ matrix.alpine_arch }}-slim-go-
 
-      - name: Check Disk Usage
+      # As of Jan 2026 the runner fails due to running out of disk space. This scriptlet
+      # from https://www.geraldonit.com/ should clean up some unnecessary things and gain
+      # back enough space to successfully build on the x86_64 runner.
+      - name: Clean Up Disk Space
+        if: runner.os == 'Linux'
         run: |
+          # Space usage before cleanup
           df -h /
-          du -sh /* 2>/dev/null | sort -hr | head -10
-          uname -m
+      
+          # Remove unused tool caches (comment any required ones with #)
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      
+          # Verify gains
+          df -h /
 
       - name: Install Deploy SSH Key
         uses: shimataro/ssh-key-action@v2
@@ -70,11 +85,23 @@ jobs:
       #     restore-keys: |
       #       ${{ matrix.alpine_arch }}-slim-go-
 
-      - name: Check Disk Usage
+      - name: Clean Up Disk Space
+        if: runner.os == 'Linux'
         run: |
+          # Space usage before cleanup
           df -h /
-          du -sh /* 2>/dev/null | sort -hr | head -10
-          uname -m
+      
+          # Remove unused tool caches (comment any required ones with #)
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+      
+          # Verify gains
+          df -h /
 
       - name: Install Deploy SSH Key
         uses: shimataro/ssh-key-action@v2
